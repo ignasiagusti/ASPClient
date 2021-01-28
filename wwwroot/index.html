@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Client App</title>
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/jquery/jquery-1.7.1.js" type="text/javascript"></script>
+</head>
+<body>
+    <h3>Gestión Empleados</h3>
+    <div>
+        <div id="divGETtodos">
+            <button id="btnGetEmployees">Get Employees</button>
+            <pre id="pre1Output"></pre>
+        </div>
+        <div id="divGETbyID">
+            <input type="text" id="GetEmployeeID" placeholder="ID Empleado a Buscar" />
+            <button id="btnGetEmployeeX">Get Employee</button>
+            <pre id="pre2Output"></pre>
+        </div>
+        <div id="divPOST">
+            <input type="text" id="PostName" placeholder="Introduce Nombre" />
+            <input type="text" id="PostSurname" placeholder="Introduce Apellido" />
+            <input type="text" id="PostPosition" placeholder="Introduce Posición" />
+            <input type="text" id="PostSalario" placeholder="Introduce Salario" />
+            <input type="submit" id="btnPostEmployee" value="Post Employee" />
+            <pre id="pre3Output"></pre>
+        </div>
+        <div id="divPUT">
+            <input type="text" id="PutID" placeholder="ID empleado a modificar" />
+            <input type="text" id="PutName" placeholder="Nombre" />
+            <input type="text" id="PutSurname" placeholder="Apellido" />
+            <input type="text" id="PutPosition" placeholder="Posición" />
+            <input type="text" id="PutSalario" placeholder="Salario" />
+            <button id="btnPutEmployeeX">Put Employee</button>
+            <pre id="pre4Output"></pre>
+        </div>
+        <div id="divDELETE">
+            <input type="text" id="DeleteID" placeholder="ID empleado a Borrar" />
+            <button id="btnDelEmployeeX">Delete Employee</button>
+            <pre id="pre5Output"></pre>
+        </div>
+    </div>
+
+    <!-- Método Get Todo-->
+    <script>
+        $(function () {
+            var getEmployees = function () {
+                var url = "https://localhost:44383/api/Employees";
+                $.get(url).always(showResponse);
+                return false;
+            };
+
+            var showResponse = function (object) {
+                $("#pre1Output").text(JSON.stringify(object, null, 4));
+            };
+
+            $("#btnGetEmployees").click(getEmployees);
+        });
+    </script>
+
+    <!-- Método Get ID-->
+    <script>
+        $(function () {
+            var getEmployeeX = function () {
+                var id = $("#GetEmployeeID").val();
+                var url = "https://localhost:44383/api/Employees/" + id;
+                $.get(url).always(showResponse);
+                return false;
+            };
+
+            var showResponse = function (object) {
+                $("#pre2Output").text(JSON.stringify(object, null, 4));
+            };
+
+            $("#btnGetEmployeeX").click(getEmployeeX);
+        });
+    </script>
+
+    <!-- Método Post-->
+    <script>
+        $("#btnPostEmployee").click(function () {
+            var name = $("#PostName").val();
+            var surname = $("#PostSurname").val();
+            var pos = $("#PostPosition").val();
+            var salary = $("#PostSalario").val();
+
+            var data = {
+                "name": name,
+                "surname": surname,
+                "position": pos,
+                "salary": salary
+            };
+
+            $.ajax('https://localhost:44383/api/Employees',
+                {
+                    type: 'POST',
+                    //contentType: "application/json",
+                    dataType: 'json',
+                    //headers: { "X-HTTP-Method-Override": "POST" },
+                    data: JSON.stringify(data),
+                    success: function (data, status, xhr) {
+                        $("#pre3Output").text('status: ' + status + ', data: ' + data + '\n' + JSON.stringify(object, null, 4));
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        $("#pre3Output").text("Error");
+                    }
+                });
+        });
+    </script>
+
+    <!-- Método PUT-->
+    <script>
+        var putEmployeeX = function () {
+
+            var id = $('#PutID').val();
+            var name = $("#PutName").val();
+            var surname = $("#PutSurname").val();
+            var pos = $("#PutPosition").val();
+            var salary = $("#PutSalario").val();
+
+            var data = {
+                id: id,
+                name: name,
+                surname: surname,
+                position: pos,
+                salary: salary
+            };
+
+            var url = "https://localhost:44383/api/Employees/" + id;
+            $.ajax({
+                url: url,
+                type: 'PUT',
+                contentType: "application/json; charset-utf-8",
+                //dataType: 'json',
+                //headers: { "X-HTTP-Method-Override": "PUT" },
+                data: JSON.stringify(data),
+                success: function (data) {
+                    $("#pre4Output").text(JSON.stringify(data, null, 4));
+                },
+                error: function () {
+                    $("#pre4Output").text('Error');
+                }
+            });
+            return false;
+        };
+        $("#btnPutEmployeeX").click(putEmployeeX);
+    </script>
+    
+    <!-- Método DELETE -->
+    <script>
+        var delEmployeeX = function () {
+            var url = "https://localhost:44383/api/Employees/" + $('#DeleteID').val();
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                success: function (data) {
+                    $("#pre5Output").text('Elemento borrado:\n\n' + JSON.stringify(data, null, 4));
+                },
+                error: function () {
+                    $("#pre5Output").text('Error');
+                }
+            });
+            return false;
+        };
+        $("#btnDelEmployeeX").click(delEmployeeX);
+    </script>
+
+</body>
+</html>
